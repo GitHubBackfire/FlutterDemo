@@ -17,7 +17,7 @@ class DEMOWidget extends StatelessWidget {
     return Container(
       color: Colors.white,
       //? 表示如果text为空，就返回尾号后的内容。
-      child: Text(text ?? "无状态DEMO"),
+      child: Text(text?? "无状态DEMO"),
     );
   }
 }
