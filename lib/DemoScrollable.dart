@@ -23,12 +23,11 @@ class SingleChildScrollViewTestRoute extends StatelessWidget {
             //动态创建一个List<Widget>
             children: str
                 .split("")
-            //每一个字母都用一个Text显示,字体为原来的两倍
-                .map((c) =>
-                Text(
-                  c,
-                  textScaleFactor: 2.0,
-                ))
+                //每一个字母都用一个Text显示,字体为原来的两倍
+                .map((c) => Text(
+                      c,
+                      textScaleFactor: 2.0,
+                    ))
                 .toList(),
           ),
         ),
@@ -113,7 +112,7 @@ class _HeaderListView extends State<HeaderListView> {
         ListTile(title: Text("商品列表")),
         Expanded(
           child:
-          ListView.builder(itemBuilder: (BuildContext context, int index) {
+              ListView.builder(itemBuilder: (BuildContext context, int index) {
             return ListTile(title: Text("$index"));
           }),
         ),
@@ -173,10 +172,9 @@ class _InfiniteListViewState extends State<InfiniteListView> {
         //显示单词列表项
         return ListTile(title: Text(_words[index]));
       },
-      separatorBuilder: (context, index) =>
-          Divider(
-            height: .0,
-          ),
+      separatorBuilder: (context, index) => Divider(
+        height: .0,
+      ),
     );
   }
 
@@ -193,7 +191,6 @@ class _InfiniteListViewState extends State<InfiniteListView> {
     });
   }
 }
-
 
 //滚动监听
 class ScrollControllerTestRoute extends StatefulWidget {
@@ -225,7 +222,6 @@ class ScrollControllerTestRouteState extends State<ScrollControllerTestRoute> {
     });
   }
 
-
   @override
   void dispose() {
     // TODO: implement dispose
@@ -236,8 +232,22 @@ class ScrollControllerTestRouteState extends State<ScrollControllerTestRoute> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-
+      appBar: AppBar(
+        title: Text("滚动控制"),
+      ),
+      body: Scrollbar(
+        child: ListView.builder(itemBuilder: (context, index) {
+          return ListTile(
+            title: Text("$index"),
+          );
+        }),
+      ),
+      floatingActionButton: !showToTopBtn
+          ? null
+          : FloatingActionButton(onPressed: () {
+              _controller.animateTo(.0,
+                  duration: Duration(microseconds: 200), curve: Curves.ease);
+            }),
     );
   }
 }
-
