@@ -23,12 +23,11 @@ class SingleChildScrollViewTestRoute extends StatelessWidget {
             //动态创建一个List<Widget>
             children: str
                 .split("")
-            //每一个字母都用一个Text显示,字体为原来的两倍
-                .map((c) =>
-                Text(
-                  c,
-                  textScaleFactor: 2.0,
-                ))
+                //每一个字母都用一个Text显示,字体为原来的两倍
+                .map((c) => Text(
+                      c,
+                      textScaleFactor: 2.0,
+                    ))
                 .toList(),
           ),
         ),
@@ -113,7 +112,7 @@ class _HeaderListView extends State<HeaderListView> {
         ListTile(title: Text("商品列表")),
         Expanded(
           child:
-          ListView.builder(itemBuilder: (BuildContext context, int index) {
+              ListView.builder(itemBuilder: (BuildContext context, int index) {
             return ListTile(title: Text("$index"));
           }),
         ),
@@ -173,10 +172,9 @@ class _InfiniteListViewState extends State<InfiniteListView> {
         //显示单词列表项
         return ListTile(title: Text(_words[index]));
       },
-      separatorBuilder: (context, index) =>
-          Divider(
-            height: .0,
-          ),
+      separatorBuilder: (context, index) => Divider(
+        height: .0,
+      ),
     );
   }
 
@@ -247,9 +245,9 @@ class ScrollControllerTestRouteState extends State<ScrollControllerTestRoute> {
       floatingActionButton: !showToTopBtn
           ? null
           : FloatingActionButton(onPressed: () {
-        _controller.animateTo(.0,
-            duration: Duration(microseconds: 200), curve: Curves.ease);
-      }),
+              _controller.animateTo(.0,
+                  duration: Duration(microseconds: 200), curve: Curves.ease);
+            }),
     );
   }
 }
@@ -315,35 +313,34 @@ class _ScrollNotificationTestRouteState
      */
     return Scrollbar(
         child: NotificationListener<ScrollNotification>(
-          onNotification: (ScrollNotification notification) {
-            double progress =
-                notification.metrics.pixels /
-                    notification.metrics.maxScrollExtent;
-            //重新构建
-            setState(() {
-              _progress = "${(progress * 100).toInt()}%";
-            });
-            print("BottomEdge: ${notification.metrics.extentAfter == 0}");
-            return false;
-          },
-          child: Stack(
-            alignment: Alignment.center,
-            children: <Widget>[
-              ListView.builder(
-                itemCount: 100,
-                itemExtent: 50.0,
-                itemBuilder: (context, index) {
-                  return ListTile(title: Text("$index"));
-                },
-              ),
-              CircleAvatar(
-                radius: 30.0,
-                child: Text(_progress),
-                backgroundColor: Colors.black54,
-              )
-            ],
+      onNotification: (ScrollNotification notification) {
+        double progress =
+            notification.metrics.pixels / notification.metrics.maxScrollExtent;
+        //重新构建
+        setState(() {
+          _progress = "${(progress * 100).toInt()}%";
+        });
+        print("BottomEdge: ${notification.metrics.extentAfter == 0}");
+        return false;
+      },
+      child: Stack(
+        alignment: Alignment.center,
+        children: <Widget>[
+          ListView.builder(
+            itemCount: 100,
+            itemExtent: 50.0,
+            itemBuilder: (context, index) {
+              return ListTile(title: Text("$index"));
+            },
           ),
-        ));
+          CircleAvatar(
+            radius: 30.0,
+            child: Text(_progress),
+            backgroundColor: Colors.black54,
+          )
+        ],
+      ),
+    ));
   }
 }
 
@@ -663,7 +660,6 @@ class _TabViewRoute1 extends State<TabViewRoute1>
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _tabController = TabController(length: tabs.length, vsync: this);
   }
@@ -713,7 +709,8 @@ class TabViewRoute2 extends StatelessWidget {
             tabs: tabs.map((e) => Tab(text: e)).toList(),
           ),
         ),
-        body: TabBarView( //构建
+        body: TabBarView(
+          //构建
           children: tabs.map((e) {
             return KeepAliveWrapper(
               child: Container(
@@ -726,5 +723,291 @@ class TabViewRoute2 extends StatelessWidget {
       ),
     );
   }
+}
 
+/**
+ * todo CustomScrollView 和 Slivers
+ *
+ * 提供一个公共的的 Scrollable 和 Viewport，来组合多个 Sliver，
+ *         Sliver名称	                   功能	                           对应的可滚动组件
+    SliverList	                   列表	                            ListView
+    SliverFixedExtentList	         高度固定的列表                 	  ListView，指定itemExtent时
+    SliverAnimatedList	           添加/删除列表项可以执行动画         AnimatedList
+    SliverGrid	                   网格	                            GridView
+    SliverPrototypeExtentList	     根据原型生成高度固定的列表	        ListView，指定prototypeItem 时
+    SliverFillViewport	           包含多给子组件，每个都可以填满屏幕	  PageView
+ */
+
+class TwoListViewDemo extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return _TwoListViewDemoState();
+  }
+}
+
+class _TwoListViewDemoState extends State<TwoListViewDemo> {
+  @override
+  Widget build(BuildContext context) {
+    var listView = SliverFixedExtentList(
+        delegate: SliverChildBuilderDelegate(
+          (_, index) => ListTile(
+            title: Text("$index"),
+          ),
+        ),
+        itemExtent: 56);
+
+    /**
+     * SliverToBoxAdapter 可以将 RenderBox 适配为 Sliver
+     */
+    CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(
+          child: SizedBox(
+            height: 300,
+            child: PageView(
+              children: [
+                Text("1"),
+                Text("2"),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+    Material(
+      child: CustomScrollView(
+        slivers: <Widget>[
+          SliverAppBar(
+            pinned: true, // 滑动到顶端时会固定住
+            expandedHeight: 250.0,
+            flexibleSpace: FlexibleSpaceBar(
+              title: const Text("Demo"),
+            ),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.all(8.0),
+            sliver: SliverGrid(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2, //Grid按两列显示
+                mainAxisSpacing: 10.0,
+                crossAxisSpacing: 10.0,
+                childAspectRatio: 4.0,
+              ),
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  return Container(
+                    alignment: Alignment.center,
+                    color: Colors.cyan[100 * (index % 9)],
+                    child: Text('grid item $index'),
+                  );
+                },
+                childCount: 20,
+              ),
+            ),
+          ),
+          SliverFixedExtentList(
+            itemExtent: 50.0,
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                return Container(
+                  alignment: Alignment.center,
+                  color: Colors.lightBlue[100 * (index % 9)],
+                  child: Text('list item $index'),
+                );
+              },
+              childCount: 20,
+            ),
+          )
+        ],
+      ),
+    );
+    /**
+     * CustomScrollView的子组件必须都是Sliver
+     */
+    return CustomScrollView(
+      slivers: [
+        listView,
+        listView,
+      ],
+    );
+  }
+}
+
+/**
+ * todo SliverPersistentHeader
+ * 组件固定顶部
+ * pinned为flase时:
+ * ------ header滑出可视，用户两次向下滑动时，header立即出现在可视区域顶部并固定住
+ */
+
+/**
+ * typedef就是给Function取个别名
+ */
+typedef SliverHeaderBuilder = Widget Function(
+    BuildContext context, double shrinkOffset, bool overlapsContent);
+
+class SliverHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final double maxHeight;
+  final double minHeight;
+  final SliverHeaderBuilder builder;
+
+  // child 为 header
+  SliverHeaderDelegate({
+    required this.maxHeight,
+    this.minHeight = 0,
+    required Widget child,
+  })  : builder = ((a, b, c) => child),
+        assert(minHeight <= maxHeight && minHeight >= 0);
+
+  //最大和最小高度相同
+  SliverHeaderDelegate.fixedHeight({
+    required double height,
+    required Widget child,
+  })  : builder = ((a, b, c) => child),
+        maxHeight = height,
+        minHeight = height;
+
+  //需要自定义builder时使用
+  SliverHeaderDelegate.builder({
+    required this.maxHeight,
+    this.minHeight = 0,
+    required this.builder,
+  });
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    // 让 header 尽可能充满限制的空间；宽度为 Viewport 宽度，
+    // 高度随着用户滑动在[minHeight,maxHeight]之间变化。
+    return SizedBox.expand(
+      child: builder(context, shrinkOffset, overlapsContent),
+    );
+  }
+
+  @override
+  double get maxExtent => maxHeight;
+
+  @override
+  double get minExtent => minHeight;
+
+  @override
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate old) {
+    return old.maxExtent != maxExtent || old.minExtent != minExtent;
+  }
+}
+
+class PersistentHeaderRoute extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return CustomScrollView(
+      slivers: [
+        SliverPersistentHeader(
+          pinned: true,
+          delegate: SliverHeaderDelegate(
+            maxHeight: 80,
+            minHeight: 50,
+            child: Container(
+              color: Colors.lightBlue.shade200,
+              alignment: Alignment.centerLeft,
+              child: Text("PersistentHeader 2"),
+            ),
+          ),
+        ),
+        buildSliverList(20),
+      ],
+    );
+  }
+}
+
+/**
+ *  TODO NestedScrollView
+ */
+
+class NestedScrollViewTestRoute extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return _NestedScrollViewTestRoute();
+  }
+}
+
+class _NestedScrollViewTestRoute extends State<NestedScrollViewTestRoute> {
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      child: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
+          // 返回一个 Sliver 数组给外部可滚动组件。
+          return <Widget>[
+            SliverAppBar(
+              title: const Text('嵌套ListView'),
+              pinned: true, // 固定在顶部
+              forceElevated: innerBoxIsScrolled,
+            ),
+            buildSliverList(5), //构建一个 sliverList
+          ];
+        },
+        body: ListView.builder(
+          padding: const EdgeInsets.all(8),
+          physics: const ClampingScrollPhysics(),
+          itemCount: 20,
+          itemBuilder: (context, index) {
+            return SizedBox(
+              height: 50,
+              child: Center(
+                child: Text("Item $index"),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class SnapAppBar extends StatelessWidget {
+  const SnapAppBar({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: NestedScrollView(
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return <Widget>[
+            // 实现 snap 效果
+            SliverAppBar(
+              floating: true,
+              snap: true,
+              expandedHeight: 200,
+              forceElevated: innerBoxIsScrolled,
+              flexibleSpace: FlexibleSpaceBar(
+                background: Image.asset(
+                  "./imgs/sea.png",
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ];
+        },
+        body: Builder(builder: (BuildContext context) {
+          return CustomScrollView(
+            slivers: <Widget>[buildSliverList(100)],
+          );
+        }),
+      ),
+    );
+  }
+}
+
+// 构建固定高度的SliverList，count为列表项属相
+Widget buildSliverList([int count = 5]) {
+  return SliverFixedExtentList(
+    itemExtent: 50,
+    delegate: SliverChildBuilderDelegate(
+      (context, index) {
+        return ListTile(title: Text('$index'));
+      },
+      childCount: count,
+    ),
+  );
 }
