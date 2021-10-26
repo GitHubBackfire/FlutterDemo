@@ -4,6 +4,9 @@ import 'dart:html';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+/**
+ * todo 数据共享（InheritedWidget）
+ */
 class ShareDataWidget extends InheritedWidget {
   final int data; //需要在子树中共享的数据，保存点击次数
 
