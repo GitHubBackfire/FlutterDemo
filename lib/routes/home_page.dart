@@ -6,14 +6,12 @@ import 'package:untitled/model/index.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 
-
 class HomeRoute extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
     return _HomeRouteState();
   }
-
 }
 
 class _HomeRouteState extends State<HomeRoute> {
@@ -30,9 +28,8 @@ class _HomeRouteState extends State<HomeRoute> {
 
   Widget _buildBody() {
     //todo
-    //UserModel userModel = Providers.of<UserModel>(context);
-    UserModel userModel = UserModel();
-    if (!userModel.isLogin) {
+    UserModel userModel = Provider.of<UserModel>(context);
+    if (userModel.isLogin) {
       return Center(
         child: RaisedButton(
           child: Text("login"),
@@ -62,7 +59,6 @@ class _HomeRouteState extends State<HomeRoute> {
       );
     }
   }
-
 }
 
 class RepoItem extends StatefulWidget {
@@ -85,9 +81,7 @@ class _RepoItemState extends State<RepoItem> {
         color: Colors.white,
         shape: BorderDirectional(
           bottom: BorderSide(
-            color: Theme
-                .of(context)
-                .dividerColor,
+            color: Theme.of(context).dividerColor,
             width: .5,
           ),
         ),
@@ -109,7 +103,7 @@ class _RepoItemState extends State<RepoItem> {
                   textScaleFactor: .9,
                 ),
                 subtitle: subtitle,
-                trailing: Text(widget.repo.language ?? ""),
+                trailing: Text("widget.repo.language ??"),
               ),
               // 构建项目标题和简介
               Padding(
@@ -133,20 +127,20 @@ class _RepoItemState extends State<RepoItem> {
                       padding: const EdgeInsets.only(top: 8, bottom: 12),
                       child: widget.repo.description == null
                           ? Text(
-                        "暂无描述",
-                        style: TextStyle(
-                            fontStyle: FontStyle.italic,
-                            color: Colors.grey[700]),
-                      )
+                              "暂无描述",
+                              style: TextStyle(
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.grey[700]),
+                            )
                           : Text(
-                        widget.repo.description,
-                        maxLines: 3,
-                        style: TextStyle(
-                          height: 1.15,
-                          color: Colors.blueGrey[700],
-                          fontSize: 13,
-                        ),
-                      ),
+                              widget.repo.description,
+                              maxLines: 3,
+                              style: TextStyle(
+                                height: 1.15,
+                                color: Colors.blueGrey[700],
+                                fontSize: 13,
+                              ),
+                            ),
                     ),
                   ],
                 ),
@@ -207,17 +201,16 @@ class _RepoItemState extends State<RepoItem> {
   }
 }
 
-Widget gmAvatar(String url, {
+Widget gmAvatar(
+  String url, {
   double width = 30,
   double? height,
   BoxFit? fit,
   BorderRadius? borderRadius,
 }) {
-  var placeholder = Image.asset(
-      "imgs/avatar-default.png", //头像占位图，加载过程中显示
+  var placeholder = Image.asset("imgs/avatar-default.png", //头像占位图，加载过程中显示
       width: width,
-      height: height
-  );
+      height: height);
   return ClipRRect(
     borderRadius: borderRadius ?? BorderRadius.circular(2),
     child: CachedNetworkImage(
@@ -231,118 +224,108 @@ Widget gmAvatar(String url, {
   );
 }
 
-
 class MyDrawer extends StatelessWidget {
   const MyDrawer({
-    required Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
-        child: MediaQuery.removePadding(
-            context: context,
-            removeTop: true,
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                _buildHeader(Widget _buildMenus());
-        Expanded(child: child)],
-    )
-    ,
-    )
-    ,
+      child: MediaQuery.removePadding(
+        context: context,
+        removeTop: true,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(), //构建抽屉菜单头部
+            Expanded(child: _buildMenus()), //构建功能菜单
+          ],
+        ),
+      ),
     );
   }
 
   Widget _buildHeader() {
     return Consumer<UserModel>(
-        builder: (BuildContext context, UserModel value, Widget child) {
-          return GestureDetector(
-            child: Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: ClipOval(
-                    // 如果已登录，则显示用户头像；若未登录，则显示默认头像
-                    child: value.isLogin
-                        ? gmAvatar(value.user.avatar_url, width: 80)
-                        : Image.asset(
-                      "imgs/avatar-default.png",
-                      width: 80,
-                    ),
-                  ),
-                ),
-                Text(
-                  value.isLogin
-                      ? value.user.login
-                      : GmLocalizations
-                      .of(context)
-                      .login,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                )
-              ],
+        builder: (BuildContext context, UserModel value, Widget? child) {
+      return GestureDetector(
+        child: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: ClipOval(
+                // 如果已登录，则显示用户头像；若未登录，则显示默认头像
+                child: value.isLogin
+                    ? gmAvatar(value.user.avatar_url, width: 80)
+                    : Image.asset(
+                        "imgs/avatar-default.png",
+                        width: 80,
+                      ),
+              ),
             ),
-            onTap: () {
-              if (!value.isLogin) Navigator.of(context).pushNamed("login");
-            },
-          );
-        });
+            Text(
+              value.isLogin ? value.user.login : "登录",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            )
+          ],
+        ),
+        onTap: () {
+          if (!value.isLogin) Navigator.of(context).pushNamed("login");
+        },
+      );
+    });
   }
 
   Widget _buildMenus() {
     return Consumer(
-        builder: (BuildContext context, UserModel userModel, Widget child) {
-          return ListView(
-            children: <Widget>[
-              ListTile(
-                leading: const Icon(Icons.color_lens),
-                title: Text(gm.theme),
-                onTap: () => Navigator.pushNamed(context, "themes"),
-              ),
-              ListTile(
-                leading: const Icon(Icons.language),
-                title: Text(gm.language),
-                onTap: () => Navigator.pushNamed(context, "language"),
-              ),
-              if(userModel.isLogin){
-                ListTile(
-                  leading: const Icon(Icons.power_settings_new),
-                  title: Text("退出"),
-                  onTap: () {
-                    showDialog(
-                        context: context,
-                        builder: (ctx) {
-                          return AlertDialog(
-                            content: Text("取消"),
-                            actions: [
-                              FlatButton(
-                                onPressed: Navigator.pop(context),
-                                child: Text("取消"),
-                              ),
-                              FlatButton(
-                                child: Text(gm.yes),
-                                onPressed: () {
-                                  //该赋值语句会触发MaterialApp rebuild
-                                  userModel.user = null;
-                                  Navigator.pop(context);
-                                },
-                              ),
-                            ],
-                          );
-                        },
+        builder: (BuildContext context, UserModel userModel, Widget? child) {
+      return ListView(
+        children: <Widget>[
+          ListTile(
+            leading: const Icon(Icons.color_lens),
+            title: Text("主题"),
+            onTap: () => Navigator.pushNamed(context, "themes"),
+          ),
+          ListTile(
+            leading: const Icon(Icons.language),
+            title: Text("语言"),
+            onTap: () => Navigator.pushNamed(context, "language"),
+          ),
+          if (userModel.isLogin)
+            ListTile(
+              leading: const Icon(Icons.power_settings_new),
+              title: Text("退出"),
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (ctx) {
+                    return AlertDialog(
+                      content: Text("提示"),
+                      actions: [
+                        FlatButton(
+                          child: Text("取消"),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                        FlatButton(
+                          child: Text("YES"),
+                          onPressed: () {
+                            //该赋值语句会触发MaterialApp rebuild  todo
+                            userModel.user = User();
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
                     );
                   },
-                ),
+                );
               },
-            ],
-          );
-        });
+            ),
+        ],
+      );
+    });
   }
-
-
 }
-

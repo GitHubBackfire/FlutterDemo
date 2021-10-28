@@ -1,9 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'package:untitled/common/Global.dart';
+import 'package:untitled/routes/home_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  Global.init().then((e) => runApp(MyApp()));
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: ThemeModel()),
+        ChangeNotifierProvider.value(value: UserModel()),
+      ],
+      child: Consumer<ThemeModel>(
+        builder: (BuildContext context, themeModel, Widget? child) {
+          return MaterialApp(
+            theme: ThemeData(
+              primarySwatch: Colors.blue,
+            ),
+            onGenerateTitle: (context) {
+              return "title";
+            },
+            home: HomeRoute(),
+            // 注册命名路由表
+            routes: <String, WidgetBuilder>{
+              // "login": (context) => LoginRoute(),
+              // "language": (context) => LanguageRoute(),
+            },
+          );
+        },
+      ),
+    );
+  }
 }
 
 /**
@@ -19,7 +53,7 @@ class DEMOWidget extends StatelessWidget {
     return Container(
       color: Colors.white,
       //? 表示如果text为空，就返回尾号后的内容。
-      child: Text(text?? "无状态DEMO"),
+      child: Text("无状态"),
     );
   }
 }
@@ -166,15 +200,7 @@ class _DemoStateWidgetState extends State<DemoStateWidget> {
   }
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-     return null;
-  }
-}
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
