@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:untitled/common/Global.dart';
 import 'package:untitled/routes/home_page.dart';
+import 'package:untitled/routes/login_page.dart';
 
 void main() {
   Global.init().then((e) => runApp(MyApp()));
@@ -30,8 +31,7 @@ class MyApp extends StatelessWidget {
             home: HomeRoute(),
             // 注册命名路由表
             routes: <String, WidgetBuilder>{
-              // "login": (context) => LoginRoute(),
-              // "language": (context) => LanguageRoute(),
+               "login": (context) => LoginRoute(),
             },
           );
         },
